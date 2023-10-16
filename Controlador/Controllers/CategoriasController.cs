@@ -3,6 +3,7 @@ using Controlador.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -38,6 +39,38 @@ namespace Controlador.Controllers
             }).ToList();
 
             return Json(categoriasConOrden, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        public ActionResult AgregarCategoria(Categoriasclasso nuevaCategoria)
+        {
+            try
+            {
+                var categoriaExistente = Categ.Categorias.FirstOrDefault(c => c.Nombre == nuevaCategoria.Nombre);
+
+                if (categoriaExistente != null)
+                {
+                    // Devolver un código de estado HTTP 409 (Conflict)
+                    return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+                }
+
+                var nuevaCategoriaEntity = new Categorias
+                {
+                    Nombre = nuevaCategoria.Nombre
+                };
+
+                Categ.Categorias.Add(nuevaCategoriaEntity);
+                Categ.SaveChanges();
+
+                // Devolver un código de estado HTTP 201 (Created) con un objeto JSON
+                return Json(new { Message = "Categoría creada con éxito" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                // Devolver un código de estado HTTP 500 (Internal Server Error)
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
         }
     }
 }
