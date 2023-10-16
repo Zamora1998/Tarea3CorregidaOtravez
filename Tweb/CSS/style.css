@@ -1,0 +1,58 @@
+﻿/* estilos.css */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+button {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.align-middle {
+    vertical-align: middle !important;
+}
+.text-center {
+    text-align: center;
+}
+
+
+
+.miBotonVerde {
+    background-color: green;
+    color: white;
+    border-radius: 10px; /* Ajusta el valor según la cantidad de redondeo que desees */
+
+}
+
+.navbar-title {
+    margin-left: 0; /* Alinea el título a la derecha de la barra de navegación */
+}
+
+
+
+/* Estilo para centrar registros en la tabla */
+.table tbody tr td {
+    text-align: center;
+}
+
+#tablaPlatillos tbody td {
+    text-align: center;
+}
