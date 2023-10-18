@@ -11,7 +11,6 @@ namespace Controlador.Controllers
 {
     public class CategoriasController : Controller
     {
-        // GET: Categorias
         private RestauranteEntities Categ = new RestauranteEntities();
 
         public CategoriasController()
@@ -19,8 +18,6 @@ namespace Controlador.Controllers
             Categ.Configuration.LazyLoadingEnabled = false;
             Categ.Configuration.ProxyCreationEnabled = false;
         }
-
-        // GET: Categorias/ObtenerCategorias
         public JsonResult ObtenerCategorias()
         {
             var categorias = Categ.Categorias
@@ -30,8 +27,6 @@ namespace Controlador.Controllers
                     Nombre = c.Nombre
                 })
                 .ToList();
-
-            // Reorganizar las propiedades en el JSON
             var categoriasConOrden = categorias.Select(c => new
             {
                 CategoriaID = c.CategoriaID,
@@ -41,9 +36,8 @@ namespace Controlador.Controllers
             return Json(categoriasConOrden, JsonRequestBehavior.AllowGet);
         }
 
-
         [HttpPost]
-        public ActionResult AgregarCategoria(Categoriasclasso nuevaCategoria)
+        public HttpStatusCodeResult AgregarCategoria(Categoriasclasso nuevaCategoria)
         {
             try
             {
@@ -51,7 +45,6 @@ namespace Controlador.Controllers
 
                 if (categoriaExistente != null)
                 {
-                    // Devolver un código de estado HTTP 409 (Conflict)
                     return new HttpStatusCodeResult(HttpStatusCode.Conflict);
                 }
 
@@ -62,15 +55,79 @@ namespace Controlador.Controllers
 
                 Categ.Categorias.Add(nuevaCategoriaEntity);
                 Categ.SaveChanges();
-
-                // Devolver un código de estado HTTP 201 (Created) con un objeto JSON
-                return Json(new { Message = "Categoría creada con éxito" }, JsonRequestBehavior.AllowGet);
+                return new HttpStatusCodeResult(HttpStatusCode.Created);
             }
             catch (Exception)
             {
-                // Devolver un código de estado HTTP 500 (Internal Server Error)
                 return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
             }
         }
+        [HttpDelete]
+        public ActionResult EliminarCategoria(int id)
+        {
+            try
+            {
+                var categoriaExistente = Categ.Categorias.FirstOrDefault(c => c.CategoriaID == id);
+
+                if (categoriaExistente == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                }
+
+                Categ.Categorias.Remove(categoriaExistente);
+                Categ.SaveChanges();
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public ActionResult EditarCategoria(string nombreActual, Categoriasclasso categoriaEditada)
+        {
+            try
+            {
+                var categoriaExistente = Categ.Categorias.FirstOrDefault(c => c.Nombre == nombreActual);
+
+                if (categoriaExistente == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                }
+
+                var otroCategoriaMismoNombre = Categ.Categorias.FirstOrDefault(c => c.Nombre == categoriaEditada.Nombre && c.Nombre != nombreActual);
+
+                if (otroCategoriaMismoNombre != null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+                }
+
+                categoriaExistente.Nombre = categoriaEditada.Nombre;
+
+                Categ.SaveChanges();
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult ObtenerCategoriasnombre()
+        {
+            try
+            {
+                var todasLasCategorias = Categ.Categorias.ToList();
+                return Json(todasLasCategorias, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
+        }
+
     }
 }

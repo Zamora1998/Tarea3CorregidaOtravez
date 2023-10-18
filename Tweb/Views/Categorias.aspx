@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> 
-    <script src="../Scripts/AgregarCategoria.js"></script>
+    <script src="../JS/AgregarCategoria.js"></script>
+    <script src="../JS/CategoriasGeneral.js"></script>
     <script src="../Scripts/CargarCategorias.js"></script>
     <script src="../Scripts/CargarCategoriasnuevas.js"></script>
 
@@ -136,145 +137,7 @@
         </div>
     </form>
 <script>
-    async function cargarDatosDesdeControlador() {
-        try {
-            const response = await fetch('http://localhost:50912/Categorias/ObtenerCategorias');
-            if (response.ok) {
-                const data = await response.json();
-                const tabla = document.getElementById('tablaCategorias');
-                const tbody = tabla.createTBody();
 
-                data.sort((a, b) => a.Nombre.localeCompare(b.Nombre));
-
-                data.forEach(categoria => {
-                    const row = tbody.insertRow();
-
-                    const cellCheck = row.insertCell();
-                    cellCheck.classList.add('text-center');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    cellCheck.appendChild(checkbox);
-
-                    const cellId = row.insertCell();
-                    cellId.classList.add('text-center');
-                    cellId.textContent = categoria.CategoriaID;
-                    const cellNombre = row.insertCell();
-                    cellNombre.classList.add('text-center');
-                    cellNombre.textContent = categoria.Nombre;
-
-                    const cellAcciones = row.insertCell();
-                    cellAcciones.classList.add('text-center');
-
-                    const btnEliminar = document.createElement('button');
-                    btnEliminar.textContent = 'Eliminar';
-                    btnEliminar.classList.add('btn', 'btn-danger');
-                    btnEliminar.type = 'button';
-                    btnEliminar.onclick = (event) => {
-                        event.stopPropagation();
-
-                        // Verificar si se ha seleccionado alguna casilla de verificación
-                        const row = event.target.closest('tr');
-                        const checkbox = row.querySelector('input[type="checkbox"]');
-
-                        if (checkbox && checkbox.checked) {
-                            // Mostrar el modal de confirmación si se ha seleccionado una casilla
-                            const id = categoria.CategoriaID;
-                            $('#modalConfirmacion').modal('show');
-
-                            // Configurar el manejador del botón "Sí, Eliminar" en el modal de confirmación
-                            document.getElementById('btnConfirmarEliminar').onclick = async () => {
-                                // Realizar la solicitud para eliminar la categoría
-                                const response = await fetch(`http://localhost:50912/api/Categorias/EliminarCategoria/${id}`, {
-                                    method: 'DELETE'
-                                });
-
-                                if (response.status === 200) {
-                                    // Si la solicitud es exitosa, cierra el modal de confirmación suavemente
-                                    $('#modalConfirmacion').modal('hide');
-                                    $('#modalConfirmacion').on('hidden.bs.modal', function () {
-                                        // Puedes recargar la página o realizar otras acciones después de eliminar
-                                        window.location.reload(); // Recargar la página
-                                    });
-                                } else {
-                                    console.error('Error al eliminar la categoría');
-                                }
-                            };
-                        } else {
-                            $('#modalAdvertencia').modal('show');
-                        }
-
-                        return false;
-                    };
-                    cellAcciones.appendChild(btnEliminar);
-
-                    // Agregar el botón "Modificar"
-                    const btnModificar = document.createElement('button');
-                    btnModificar.textContent = 'Modificar';
-                    btnModificar.classList.add('btn', 'btn-warning', 'ml-2'); // Agrega margen izquierdo para separarlos
-                    btnModificar.type = 'button';
-                    btnModificar.onclick = (event) => {
-                        event.stopPropagation();
-                        const row = event.target.closest('tr');
-                        const checkbox = row.querySelector('input[type="checkbox"]');
-
-                        if (checkbox && checkbox.checked) {
-                            // Mostrar el modal de edición
-                            const nombre = categoria.Nombre;
-                            $('#modalModificar').modal('show');
-                            document.getElementById('modalCategoriaID').textContent = nombre; // Mostrar el nombre en el modal
-
-                            document.getElementById('btnAceptarModificar').onclick = async () => {
-                                const nombreActual = document.getElementById('modalCategoriaID').textContent; // Obtén el nombre actual del elemento span
-                                const nuevoNombre = document.getElementById('txtinputNombre').value; // Obtén el nuevo nombre del input en el modal
-
-                                // Expresión regular para validar que el valor solo contenga letras
-                                const letrasRegex = /^[A-Za-z]+$/;
-
-                                if (!nuevoNombre || !letrasRegex.test(nuevoNombre)) {
-                                    document.getElementById('errorEditar').textContent = 'El nombre no es válido.';
-                                    return;
-                                }
-
-                                const requestBody = {
-                                    Nombre: nuevoNombre
-                                };
-
-                                const response = await fetch(`http://localhost:50912/api/Categorias/EditarCategoria?nombreActual=${nombreActual}`, {
-                                    method: 'PUT',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(requestBody)
-                                });
-
-                                if (response.status === 200) {
-                                    $('#modalModificar').modal('hide');
-                                    $('#modalModificar').on('hidden.bs.modal', function () {
-                                        window.location.reload();
-                                    });
-                                } else if (response.status === 409) {
-                                    document.getElementById('errorEditar').textContent = 'El nombre ya se encuentra en uso.';
-                                } else {
-                                    console.error('Error al editar la categoría');
-                                }
-                            };
-                        } else {
-                            $('#modalAdvertencia').modal('show');
-                        }
-
-                        return false;
-                    };
-                    cellAcciones.appendChild(btnModificar);
-                });
-            } else {
-                console.error('Error al cargar datos desde Controlador');
-            }
-        } catch (error) {
-            console.error('Error inesperado: ' + error.message);
-        }
-    }
-
-    cargarDatosDesdeControlador();
 </script>
 
 

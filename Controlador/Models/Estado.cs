@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Controlador.Models
 {
-    public class Estado
+    public class Estadoclass
     {
         public int EstadoID { get; set; }
         public string Descripcion { get; set; }
