@@ -1,5 +1,7 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Platillos.aspx.cs" Inherits="Tweb.Views.Platillos" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Listado.aspx.cs" Inherits="Tweb.Views.Listado" %>
+
 <!DOCTYPE html>
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Administracion de Platillos</title>
@@ -9,8 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>  
-    <script src="../JS/JSPlatillos.js"></script>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="../JS/ListadoGeneral.js"></script>   
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -34,13 +36,20 @@
             </div>
         </div>
     </nav>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="categoriaDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Selecciona una categoría
+        </button>
+        <div class="dropdown-menu" aria-labelledby="categoriaDropdown" id="dropdownCategorias">
+        </div>
+    </div>
     <form id="form1" runat="server">
         <div>
             <h2>Platillos </h2>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#nuevoPlatilloModal" onclick="mostrarModal()">
                 Agregar Platillo
             </button>
-            <div class="modal fade" id="nuevoPlatilloModal">
+            <div class="modal fade" id="nuevoPlatilloModal" runat="server">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -50,11 +59,11 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="nombre">Nombre:</label>
-                                <input type="text" class="form-control" id="nombre" runat="server"/>
+                                <input type="text" class="form-control" id="nombre" runat="server" />
                             </div>
                             <div class="form-group">
                                 <label for="costo">Costo:</label>
-                                <input type="text" class="form-control" id="costo" runat="server"/>
+                                <input type="text" class="form-control" id="costo" runat="server" />
                             </div>
                             <div class="form-group">
                                 <label for="ddlcategoria">Categoría:</label>
@@ -70,7 +79,7 @@
                         </div>
                         <div class="modal-footer">
                             <asp:Button ID="btnGuardarPlatillo" runat="server" Text="Aceptar" CssClass="btn btn-primary" OnClientClick="validarYGuardarPlatillo(); return false;" />
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
                 </div>
@@ -83,7 +92,7 @@
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <p>Por favor seleccione el platillo.</p>
+                            <p>Por favor seleccione el platillo</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
@@ -102,7 +111,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>¿Desea eliminar el platillo seleccionado?</p>
+                            <p>¿Desea eliminar el platillo seleccionado?<span id="nombrePlatillo"></span>?</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
@@ -116,12 +125,12 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalModificarLabel">Editar Platillo</h5>
+                            <h5 class="modal-title" id="modalModificarLabel">Modificar Platillo</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
+                        <div class ="modal-body">
                             <p>ID de Platillo: <span id="modalPlatilloID"></span></p>
                             <p>Nombre Existente: <span id="txtmodalNombre2" class="form-control"></span></p>
                             <div class="form-group">
@@ -132,7 +141,7 @@
                             <div class="form-group">
                                 <label for="txtmodalCosto">Costo:</label>
                                 <input type="hidden" id="CostoActual" />
-                                <input type="text" id="txtmodalCosto" class="form-control" placeholder="Ingrese el nuevo coste del platillo" pattern="[0-9]+(\.[0-9]{1,2})?" title="Solo números, opción decimal con hasta dos dígitos" />
+                                <input type="text" id="txtmodalCosto" class="form-control" placeholder="Ingrese el nuevo coste del platillo" title="Solo números, opción decimal con hasta dos dígitos" />
                             </div>
                             <div class="form-group">
                                 <label for="ddleditarcategoria">Categoría:</label>
@@ -154,7 +163,7 @@
                 </div>
             </div>
             <h3>Listado de Platillos</h3>
-            <table id="tablaPlatillos" class="table table-bordered  table-striped" >
+            <table id="tablaPlatillos" class="table table-bordered  table-striped">
                 <thead>
                     <tr>
                         <th></th>
@@ -171,6 +180,180 @@
         </div>
     </form>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdownCategorias = document.querySelector("#dropdownCategorias");
+            let categoriaSeleccionada = "Selecciona una categoría"; // Valor inicial del texto seleccionado
+
+            fetch("http://localhost:50912/Categorias/ObtenerCategorias")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(categoria => {
+                        const categoriaOption = document.createElement("a");
+                        categoriaOption.classList.add("dropdown-item");
+                        categoriaOption.textContent = categoria.Nombre;
+                        dropdownCategorias.appendChild(categoriaOption);
+                        categoriaOption.addEventListener("click", function () {
+                            const categoriaSeleccionada = categoria.Nombre;
+                            const categoriaDropdown = document.querySelector("#categoriaDropdown");
+                            categoriaDropdown.textContent = categoriaSeleccionada;
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar las categorías: " + error);
+                });
+
+            dropdownCategorias.addEventListener("click", function () {
+                const categoriaSeleccionadaTexto = event.target.textContent.trim();
+                if (categoriaSeleccionadaTexto !== categoriaSeleccionada) {
+                    categoriaSeleccionada = categoriaSeleccionadaTexto;
+                    // Hacer una solicitud al servidor para obtener los platillos por categoría
+                    fetch(`http://localhost:50912/Platillos/ListarPlatillosPorCategoria?categoriaSeleccionada=${categoriaSeleccionada}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Limpiar la tabla de platillos
+                            const tablaPlatillos = document.getElementById('tablaPlatillos').getElementsByTagName('tbody')[0];
+                            tablaPlatillos.innerHTML = '';
+
+                            // Llenar la tabla con los platillos filtrados
+                            data.forEach(platillo => {
+                                const row = tablaPlatillos.insertRow();
+                                const checkboxCell = row.insertCell();
+                                const idCell = row.insertCell();
+                                const nombreCell = row.insertCell();
+                                const costoCell = row.insertCell();
+                                const categoriaCell = row.insertCell();
+                                const estadoCell = row.insertCell();
+                                const cellAcciones = row.insertCell();
+                                cellAcciones.classList.add('text-center');
+
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkboxCell.appendChild(checkbox);
+
+                                idCell.textContent = platillo.PlatilloID;
+                                nombreCell.textContent = platillo.Nombre;
+                                costoCell.textContent = platillo.Costo.toFixed(2);
+                                categoriaCell.textContent = platillo.CategoriaNombre;
+                                estadoCell.textContent = platillo.EstadoDescripcion;
+
+                                const btnEliminar = document.createElement('button');
+                                btnEliminar.textContent = 'Eliminar';
+                                btnEliminar.classList.add('btn', 'btn-danger');
+                                btnEliminar.type = 'button';
+                                btnEliminar.onclick = (event) => {
+                                    event.stopPropagation();
+
+                                    // Verificar si se ha seleccionado alguna casilla de verificación
+                                    const row = event.target.closest('tr');
+                                    const checkbox = row.querySelector('input[type="checkbox"]');
+
+                                    if (checkbox && checkbox.checked) {
+                                        const IDPlatillo = platillo.PlatilloID;
+                                        // Mostrar el modal de confirmación si se ha seleccionado una casilla
+                                        $('#confirmacionModal').modal('show');
+
+                                        // Configurar el manejador del botón "Sí, Eliminar" en el modal de confirmación
+                                        document.getElementById('botonEliminar').onclick = async () => {
+                                            // Realizar la solicitud para eliminar el platillo
+                                            const response = await fetch(`http://localhost:50912/Platillos/EliminarPlatillo/?idPlatillo=${IDPlatillo}`, {
+                                                method: 'DELETE'
+                                            });
+
+                                            if (response.status === 200) {
+                                                // Si la solicitud es exitosa, cierra el modal de confirmación suavemente
+                                                $('#confirmacionModal').modal('hide');
+                                                $('#confirmacionModal').on('hidden.bs.modal', function () {
+                                                    // Puedes recargar la página o realizar otras acciones después de eliminar
+                                                    window.location.reload(); // Recargar la página
+                                                });
+                                            } else {
+                                                mostrarError(errorMensaje, "El platillo no se pudo eliminar correctamente.", false);
+                                            }
+                                        };
+                                    } else {
+                                        $('#modalAdvertencia').modal('show');
+                                    }
+                                    return false;
+                                };
+
+                                cellAcciones.appendChild(btnEliminar);
+
+                                const btnModificar = document.createElement('button');
+                                btnModificar.textContent = 'Modificar';
+                                btnModificar.classList.add('btn', 'btn-warning', 'ml-2');
+                                btnModificar.type = 'button';
+                                btnModificar.onclick = (event) => {
+                                    event.stopPropagation();
+                                    const selectedRow = obtenerFilaSeleccionada();
+
+                                    if (selectedRow) {
+                                        // Obtener datos de la fila seleccionada
+                                        const idPlatillo = selectedRow.cells[1].textContent;
+                                        const nombreActual = selectedRow.cells[2].textContent;
+                                        const nuevoNombre = document.getElementById('txtmodalNombre').value;
+                                        const nuevoCosto = parseFloat(document.getElementById('txtmodalCosto').value);
+
+                                        // Llenar modal con datos de la fila seleccionada
+                                        document.getElementById('modalPlatilloID').textContent = idPlatillo;
+                                        document.getElementById('txtmodalNombre2').textContent = nombreActual;
+                                        document.getElementById('txtmodalNombre').value = nuevoNombre;
+                                        document.getElementById('txtmodalCosto').value = nuevoCosto;
+
+                                        // Mostrar modal de modificación
+                                        $('#modalModificar').modal('show');
+                                        llenarECategorias();
+                                        llenarEEstados();
+
+                                        document.getElementById('btnAceptarModificar').onclick = async () => {
+                                            const nuevoNombre = document.getElementById('txtmodalNombre').value;
+                                            const nuevoCosto = parseInt(document.getElementById('txtmodalCosto').value);
+                                            const categoria = parseInt(document.getElementById('<%= ddleditarcategoria.ClientID %>').value);
+                                            const estado = parseInt(document.getElementById('<%= ddleditarestado.ClientID %>').value);
+
+                                            const requestBody = {
+                                                Nombre: nuevoNombre,
+                                                Costo: nuevoCosto,
+                                                CategoriaID: categoria,
+                                                IDESTADO: estado
+                                            };
+
+                                            const response = await fetch(`http://localhost:50912/Platillos/EditarPlatillo?nombreActual=${nombreActual}`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify(requestBody)
+                                            });
+
+                                            if (response.status === 200) {
+                                                $('#modalModificar').modal('hide');
+                                                $('#modalModificar').on('hidden.bs.modal', function () {
+                                                    window.location.reload();
+                                                });
+                                            } else if (response.status === 409) {
+                                                document.getElementById('errorEditar').textContent = 'El nombre ya se encuentra en uso.';
+                                            } else {
+                                                mostrarError(errorMensaje, "Error al editar el platillo.", true);
+                                            }
+                                        };
+                                    } else {
+                                        $('#modalAdvertencia').modal('show');
+                                    }
+                                    return false;
+                                };
+                                cellAcciones.appendChild(btnModificar);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error al cargar los platillos por categoría: " + error);
+                        });
+                } else {
+                    // Si no se ha seleccionado una categoría, mostrar todos los platillos
+                    cargarPlatillosDesdeAPI();
+                }
+            });
+        });
 
 
         function mostrarModal() {
@@ -254,234 +437,85 @@
         function validarYGuardarPlatillo() {
             if (validarPlatillo()) {
                 const nombre = document.getElementById('<%= nombre.ClientID %>').value;
-        const costo = parseFloat(document.getElementById('<%= costo.ClientID %>').value);
-        const categoria = parseInt(document.getElementById('<%= ddlcategoria.ClientID %>').value);
-        const estado = parseInt(document.getElementById('<%= ddlestado.ClientID %>').value);
+                const costo = parseFloat(document.getElementById('<%= costo.ClientID %>').value);
+                const categoria = parseInt(document.getElementById('<%= ddlcategoria.ClientID %>').value);
+                const estado = parseInt(document.getElementById('<%= ddlestado.ClientID %>').value);
 
-        fetch('http://localhost:50912/Platillos/RegistrarPlatillo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                Nombre: nombre,
-                Costo: costo,
-                CategoriaID: categoria,
-                IDESTADO: estado
-            })
-        })
-            .then(response => {
-                if (response.status === 201) {
-                    mostrarError(errorMensaje, "Platillo creado con éxito.", true);
-                } else if (response.status === 409) {
-                    mostrarError(errorMensaje, "El platillo ya existe.", false);
-                } else {
-                    mostrarError(errorMensaje, "El platillo no se envio correctamente.", false);
-                }
-            })
-            .catch(error => {
-                mostrarError(errorMensaje, error.message, true);
-            })
-    }
-}
-
-function validarPlatillo() {
-    var nombre = document.getElementById('<%= nombre.ClientID %>').value;
-    var costo = document.getElementById('<%= costo.ClientID %>').value;
-    var categoria = document.getElementById('<%= ddlcategoria.ClientID %>').value;
-    var estado = document.getElementById('<%= ddlestado.ClientID %>').value;
-    var errorMensaje = document.getElementById('<%= errorMensaje.ClientID %>');
-
-    // Validar que los campos no estén vacíos
-    if (nombre.trim() === "" || costo.trim() === "" || categoria.trim() === "" || estado.trim() === "") {
-        mostrarError(errorMensaje, "Todos los campos son obligatorios.", false);
-        return false;
-    }
-
-    // Validar que el nombre solo contenga letras y tenga como máximo 100 caracteres
-    if (!/^[A-Za-z]+$/.test(nombre) || nombre.length > 100) {
-        mostrarError(errorMensaje, "El campo Nombre debe contener solo letras", false);
-        return false;
-    }
-
-    // Validar que el costo sea numérico con hasta dos decimales
-    if (!/^\d+(\.\d{1,2})?$/.test(costo)) {
-        mostrarError(errorMensaje, "El campo Costo debe ser un número válido con hasta dos decimales.", false);
-        return false;
-    }
-
-    // Validar que la categoría esté seleccionada
-    if (estado === "0") {
-        mostrarError(errorMensaje, "Por favor, seleccione un estado.", false);
-        return false;
-    }
-
-    // Validar que la categoría esté seleccionada
-    if (categoria === "0") {
-        mostrarError(errorMensaje, "Por favor, seleccione una categoría.", false);
-        return false;
-    }
-    // Si todas las validaciones pasan, retorna true
-    return true;
-}
-
-function mostrarError(elemento, mensaje, recargarPagina) {
-    elemento.textContent = mensaje;
-    setTimeout(function () {
-        elemento.textContent = "";
-        if (recargarPagina) {
-            location.reload();
-        }
-    }, 4000);
-}
-
-async function cargarPlatillosDesdeAPI() {
-    try {
-        const response = await fetch('http://localhost:50912/Platillos/ListarPlatillos');
-        if (response.ok) {
-            const data = await response.json();
-            const tabla = document.getElementById('tablaPlatillos').getElementsByTagName('tbody')[0];
-            data.forEach(platillo => {
-                const row = tabla.insertRow();
-                const checkboxCell = row.insertCell();
-                const idCell = row.insertCell();
-                const nombreCell = row.insertCell();
-                const costoCell = row.insertCell();
-                const categoriaCell = row.insertCell();
-                const estadoCell = row.insertCell();
-                const cellAcciones = row.insertCell();
-                cellAcciones.classList.add('text-center');
-
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkboxCell.appendChild(checkbox);
-
-                idCell.textContent = platillo.PlatilloID;
-                nombreCell.textContent = platillo.Nombre;
-                costoCell.textContent = platillo.Costo.toFixed(2);
-                categoriaCell.textContent = platillo.CategoriaNombre;
-                estadoCell.textContent = platillo.EstadoDescripcion;
-
-                const btnEliminar = document.createElement('button');
-                btnEliminar.textContent = 'Eliminar';
-                btnEliminar.classList.add('btn', 'btn-danger');
-                btnEliminar.type = 'button';
-
-                btnEliminar.dataset.idPlatillo = platillo.PlatilloID; // Establece el PlatilloID como atributo de datos
-
-                btnEliminar.onclick = (event) => {
-                    event.stopPropagation();
-
-                    // Obtén el PlatilloID del botón
-                    const PlatilloID = event.target.dataset.idPlatillo;
-
-                    // Verificar si se ha seleccionado alguna casilla de verificación
-                    const row = event.target.closest('tr');
-                    const checkbox = row.querySelector('input[type="checkbox"]');
-
-                    if (checkbox && checkbox.checked) {
-                        // Mostrar el modal de confirmación si se ha seleccionado una casilla
-                        $('#confirmacionModal').modal('show');
-
-                        // Configurar el manejador del botón "Sí, Eliminar" en el modal de confirmación
-                        document.getElementById('botonEliminar').onclick = async () => {
-                            // Realizar la solicitud para eliminar el platillo
-                            const response = await fetch(`http://localhost:50912/Platillos/EliminarPlatillo/${PlatilloID}`, {
-                                method: 'DELETE'
-                            });
-
-                            if (response.status === 200) {
-                                // Si la solicitud es exitosa, cierra el modal de confirmación suavemente
-                                $('#confirmacionModal').modal('hide');
-                                $('#confirmacionModal').on('hidden.bs.modal', function () {
-                                    // Puedes recargar la página o realizar otras acciones después de eliminar
-                                    window.location.reload(); // Recargar la página
-                                });
-                            } else {
-                                mostrarError(errorMensaje, "El platillo no se pudo eliminar correctamente.", false);
-                            }
-                        };
-                    } else {
-                        $('#modalAdvertencia').modal('show');
-                    }
-                    return false;
-                };
-
-                cellAcciones.appendChild(btnEliminar);
-
-                const btnModificar = document.createElement('button');
-                btnModificar.textContent = 'Modificar';
-                btnModificar.classList.add('btn', 'btn-warning', 'ml-2');
-                btnModificar.type = 'button';
-                btnModificar.onclick = (event) => {
-                    event.stopPropagation();
-                    const selectedRow = obtenerFilaSeleccionada();
-
-                    if (selectedRow) {
-                        // Obtener datos de la fila seleccionada
-                        const idPlatillo = selectedRow.cells[1].textContent;
-                        const nombreActual = selectedRow.cells[2].textContent;
-                        const nuevoNombre = document.getElementById('txtmodalNombre').value;
-                        const nuevoCosto = parseFloat(document.getElementById('txtmodalCosto').value);
-
-                        // Llenar modal con datos de la fila seleccionada
-                        document.getElementById('modalPlatilloID').textContent = idPlatillo;
-                        document.getElementById('txtmodalNombre2').textContent = nombreActual;
-                        document.getElementById('txtmodalNombre').value = nuevoNombre;
-                        document.getElementById('txtmodalCosto').value = nuevoCosto;
-
-                        // Mostrar modal de modificación
-                        $('#modalModificar').modal('show');
-                        llenarECategorias();
-                        llenarEEstados();
-
-                        document.getElementById('btnAceptarModificar').onclick = async () => {
-                            const nuevoNombre = document.getElementById('txtmodalNombre').value;
-                            const nuevoCosto = parseInt(document.getElementById('txtmodalCosto').value);
-                            const categoria = parseInt(document.getElementById('<%= ddleditarcategoria.ClientID %>').value);
-                            const estado = parseInt(document.getElementById('<%= ddleditarestado.ClientID %>').value);
-
-                            const requestBody = {
-                                Nombre: nuevoNombre,
-                                Costo: nuevoCosto,
-                                CategoriaID: categoria,
-                                IDESTADO: estado
-                            };
-
-                            const response = await fetch(`http://localhost:50912/Platillos/EditarPlatillo/?nombreActual=${nombreActual}`, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(requestBody)
-                            });
-
-                            if (response.status === 200) {
-                                $('#modalModificar').modal('hide');
-                                $('#modalModificar').on('hidden.bs.modal', function () {
-                                    window.location.reload();
-                                });
-                            } else if (response.status === 409) {
-                                document.getElementById('errorEditar').textContent = 'El nombre ya se encuentra en uso.';
-                            } else {
-                                mostrarError(errorMensaje, "Error al editar el platillo.", true);
-                            }
-                        };
-                    } else {
-                        $('#modalAdvertencia').modal('show');
-                    }
-                    return false;
-                };
-                cellAcciones.appendChild(btnModificar);
-            });
-                } else {
-                    mostrarError(errorMensaje, "Error al cargar datos desde la api.", false);
-                }
-            } catch (error) {
-                mostrarError(errorMensaje, "Error inesperado.", true);
+                fetch('http://localhost:50912/Platillos/RegistrarPlatillo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Nombre: nombre,
+                        Costo: costo,
+                        CategoriaID: categoria,
+                        IDESTADO: estado
+                    })
+                })
+                    .then(response => {
+                        if (response.status === 201) {
+                            mostrarError(errorMensaje, "Platillo creado con éxito.", true);
+                        } else if (response.status === 409) {
+                            mostrarError(errorMensaje, "El platillo ya existe.", false);
+                        } else {
+                            mostrarError(errorMensaje, "El platillo no se envio correctamente.", false);
+                        }
+                    })
+                    .catch(error => {
+                        mostrarError(errorMensaje, error.message, true);
+                    })
             }
         }
 
+        function validarPlatillo() {
+            var nombre = document.getElementById('<%= nombre.ClientID %>').value;
+    var costo = document.getElementById('<%= costo.ClientID %>').value;
+    var categoria = document.getElementById('<%= ddlcategoria.ClientID %>').value;
+    var estado = document.getElementById('<%= ddlestado.ClientID %>').value;
+            var errorMensaje = document.getElementById('<%= errorMensaje.ClientID %>');
+
+            // Validar que los campos no estén vacíos
+            if (nombre.trim() === "" || costo.trim() === "" || categoria.trim() === "" || estado.trim() === "") {
+                mostrarError(errorMensaje, "Todos los campos son obligatorios.", false);
+                return false;
+            }
+
+            // Validar que el nombre solo contenga letras y tenga como máximo 100 caracteres
+            if (!/^[A-Za-z]+$/.test(nombre) || nombre.length > 100) {
+                mostrarError(errorMensaje, "El campo Nombre debe contener solo letras", false);
+                return false;
+            }
+
+            // Validar que el costo sea numérico con hasta dos decimales
+            if (!/^\d+(\.\d{1,2})?$/.test(costo)) {
+                mostrarError(errorMensaje, "El campo Costo debe ser un número válido con hasta dos decimales.", false);
+                return false;
+            }
+
+            // Validar que la categoría esté seleccionada
+            if (estado === "0") {
+                mostrarError(errorMensaje, "Por favor, seleccione un estado.", false);
+                return false;
+            }
+
+            // Validar que la categoría esté seleccionada
+            if (categoria === "0") {
+                mostrarError(errorMensaje, "Por favor, seleccione una categoría.", false);
+                return false;
+            }
+            // Si todas las validaciones pasan, retorna true
+            return true;
+        }
+        function mostrarError(elemento, mensaje, recargarPagina) {
+            elemento.textContent = mensaje;
+            setTimeout(function () {
+                elemento.textContent = "";
+                if (recargarPagina) {
+                    location.reload();
+                }
+            }, 4000);
+        }
         function obtenerFilaSeleccionada() {
             const checkboxes = document.querySelectorAll('#tablaPlatillos tbody input[type="checkbox"]');
             for (const checkbox of checkboxes) {
@@ -492,8 +526,6 @@ async function cargarPlatillosDesdeAPI() {
             }
             return null;
         }
-        cargarPlatillosDesdeAPI();
-
     </script>
     <style>
         #tablaPlatillos td {
